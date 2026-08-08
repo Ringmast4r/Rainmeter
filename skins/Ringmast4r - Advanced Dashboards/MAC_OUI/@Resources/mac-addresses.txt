@@ -1,0 +1,6 @@
+Bluetooth - Bluetooth Network Connection
+  MAC: 34:7D:F6:EE:70:5E
+Ethernet - Ethernet
+  MAC: C4:00:49:29:F9:3B
+WiFi - Wi-Fi [UP]
+  MAC: 96:EB:2C:F0:7D:BE
