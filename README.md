@@ -1,4 +1,24 @@
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0d1117,35:1b3a6b,70:2f64aa,100:00bcd4&height=230&section=header&text=RAINMETER&fontSize=80&fontColor=ffffff&animation=fadeIn&fontAlignY=34&desc=Live%20widgets%20on%20your%20desktop%20%7C%20drives%20%7C%20weather%20%7C%20system%20%7C%20dividers&descSize=17&descAlignY=54"/>
+<div align="center">
+
+<img width="100%" alt="RAINMETER" src="https://capsule-render.vercel.app/api?type=waving&color=0:000000,100:2F64AA&height=220&section=header&text=RAINMETER&fontSize=60&fontColor=ffffff&animation=twinkling&fontAlignY=35&desc=Windows%20%7C%20Rainmeter%20%7C%20Widgets&descSize=16&descAlignY=58"/>
+
+`Windows` [`Rainmeter`](https://www.rainmeter.net/) `Widgets` - Collection of Rainmeter skins for Windows: live desktop widgets for system, network, weather, and media. Linux counterpart: Ringmast4r/Conky
+
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=20&pause=1000&color=2F64AA&center=true&vCenter=true&multiline=true&repeat=true&width=950&height=90&lines=Collection+of+Rainmeter+skins+for+Windows%3A+live+desktop+widgets+for...%3BWindows+%2F+Rainmeter+%2F+Widgets)](https://git.io/typing-svg)
+
+<br>
+
+[![Project](https://img.shields.io/badge/Project-Rainmeter-2F64AA?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Ringmast4r/Rainmeter)
+[![Format](https://img.shields.io/badge/Format-Rainmeter-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Ringmast4r/Rainmeter/tree/main)
+
+[![Stars](https://img.shields.io/github/stars/Ringmast4r/Rainmeter?style=flat-square&color=2F64AA)](https://github.com/Ringmast4r/Rainmeter/stargazers)
+[![Forks](https://img.shields.io/github/forks/Ringmast4r/Rainmeter?style=flat-square&color=2F64AA)](https://github.com/Ringmast4r/Rainmeter/network/members)
+[![Repo Size](https://img.shields.io/github/repo-size/Ringmast4r/Rainmeter?style=flat-square&color=2F64AA)](https://github.com/Ringmast4r/Rainmeter)
+[![Last Commit](https://img.shields.io/github/last-commit/Ringmast4r/Rainmeter?style=flat-square&color=2F64AA)](https://github.com/Ringmast4r/Rainmeter/commits/main)
+
+</div>
+
+---
 
 <div align="center">
 
@@ -16,9 +36,9 @@ Rainmeter puts live, clickable, always-there information on it instead.
 
 </div>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,35:1b3a6b,70:2f64aa,100:00bcd4&height=3&section=header"/>
 
-## Why Rainmeter
+<a id="why-rainmeter"></a>
+## `> why_rainmeter`
 
 Rainmeter has been around since 2001 and is still the best thing on Windows for this. It is free, open source, and about as light as software gets.
 
@@ -32,9 +52,9 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 
 **Nothing phones home.** No account, no telemetry, no subscription, no ads. You download it, it runs.
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:1b3a6b,100:2f64aa&height=2&section=header"/>
 
-## The Skins (18+ Collections)
+<a id="the-skins-18-collections"></a>
+## `> the_skins_18_collections`
 
 | Folder | Description |
 |:--|:--|
@@ -55,9 +75,9 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 | **@DriveData - Drive Backend Service** | Background service for drive monitoring (do not load directly) |
 | **@Vault - Resource Library** | Shared resources and fonts for all skins |
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:2f64aa,100:00bcd4&height=2&section=header"/>
 
-## Weather Widget
+<a id="weather-widget"></a>
+## `> weather_widget`
 
 ![No API key](https://img.shields.io/badge/No-API%20key-00e676?style=flat-square&labelColor=0d1117)
 ![wttr.in](https://img.shields.io/badge/source-wttr.in-2f64aa?style=flat-square&labelColor=0d1117)
@@ -79,9 +99,9 @@ Underneath, the day is split into **morning / afternoon / evening** so you can s
 
 It pulls the `j1` JSON feed from [wttr.in](https://wttr.in) — no API key, no signup, no account. One HTTP request every 30 minutes populates all 34 fields.
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:00bcd4,100:00e676&height=2&section=header"/>
 
-## Drive Space Widget
+<a id="drive-space-widget"></a>
+## `> drive_space_widget`
 
 <img align="right" width="330" src="screenshots/drive-space.png"/>
 
@@ -98,9 +118,9 @@ Scheduled Task  →  driveinfo.ps1  →  DriveData.inc  →  @Include in the ski
 
 A scheduled task runs `driveinfo.ps1` once a minute. It scans all drives, does all the blocking work off in its own process, and writes plain Rainmeter variables. The skins `@Include` that file and do zero drive I/O. Startup went from minutes of hanging to **1.2 seconds**.
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:1b3a6b,100:2f64aa&height=2&section=header"/>
 
-## Divider Pack
+<a id="divider-pack"></a>
+## `> divider_pack`
 
 ![416 files](https://img.shields.io/badge/416-files-00bcd4?style=flat-square&labelColor=0d1117)
 ![26 colours](https://img.shields.io/badge/26-colours-ff5252?style=flat-square&labelColor=0d1117)
@@ -114,9 +134,9 @@ The trick is the folder layout. Rainmeter only allows one active `.ini` per conf
 
 That means you can run eight vertical rules at once, each a different colour, and swap any one of them without touching the others.
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:00bcd4,100:00e676&height=2&section=header"/>
 
-## System Monitoring
+<a id="system-monitoring"></a>
+## `> system_monitoring`
 
 <p align="center">
   <img width="300" src="screenshots/system-info.png"/>
@@ -131,7 +151,8 @@ CPU and RAM as rings, and time since boot broken into days, hours, minutes, seco
 
 Compact drive list view with local and network drives.
 
-## Install
+<a id="install"></a>
+## `> install`
 
 ```
 1.  Install Rainmeter                    https://www.rainmeter.net/
@@ -148,4 +169,10 @@ Skins are plain text. Open one, change a colour, hit refresh, see it immediately
 
 </div>
 
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:00bcd4,30:2f64aa,65:1b3a6b,100:0d1117&height=140&section=footer"/>
+---
+
+<div align="center">
+
+<img width="100%" alt="RAINMETER footer" src="https://capsule-render.vercel.app/api?type=waving&color=0:2F64AA,100:000000&height=120&section=footer&text=RINGMAST4R%20%2F%2F%20WIDGETS&fontSize=18&fontColor=ffffff&fontAlignY=65"/>
+
+</div>
