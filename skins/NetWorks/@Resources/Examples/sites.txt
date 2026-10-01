@@ -1,4 +1,5 @@
-# Sites for the Sites up card, one per line (up to 16). https:// is assumed when no scheme is given.
+# Sites for the Sites up card, one per line (up to 64). https:// is assumed when no scheme is given.
+# The card shows 16 at a time, worst first; the mouse wheel scrolls the rest.
 example.com
 https://www.wikipedia.org
 https://github.com

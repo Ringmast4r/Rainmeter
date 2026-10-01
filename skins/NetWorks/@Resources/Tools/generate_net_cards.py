@@ -468,6 +468,9 @@ def context(*items):
 
 RUN_NOW = '[!CommandMeasure mRun "Run"]'
 ON_REFRESH = f"OnRefreshAction={RUN_NOW}\n"
+# Mouse wheel anywhere on the card calls the Lua script's Scroll(); for lists longer than the table (see scrollbar()).
+SCROLL = ('MouseScrollUpAction=[!CommandMeasure mScript "Scroll(-1)"]\n'
+          'MouseScrollDownAction=[!CommandMeasure mScript "Scroll(1)"]\n')
 
 
 def statboxes(boxes, y, W, h=64):
@@ -602,6 +605,27 @@ Text=
     return s
 
 
+def scrollbar(prefix, n, y0, W, H, row_h=20):
+    """Track and thumb down the right edge of a gtable, plus a 'rows a-b of n' note in the footer. Hidden until
+    the Lua script holds more rows than the table shows; Lua moves the thumb (Shape2) and fills the note."""
+    return f"""
+[{prefix}Scroll]
+Meter=Shape
+Shape=Rectangle {W-21},{y0+20},3,{n*row_h} | Fill Color #cTrack# | StrokeWidth 0
+Shape2=Rectangle {W-21},{y0+20},3,{n*row_h} | Fill Color #cFg# | StrokeWidth 0
+Hidden=1
+
+[MScroll]
+Meter=String
+MeterStyle=sCap
+StringCase=None
+StringAlign=Right
+X={W-18}
+Y={H-22}
+Text=
+"""
+
+
 def table_height(y0, n, row_h=20):
     return y0 + 20 + n * row_h + 8 + 32
 
@@ -647,12 +671,14 @@ W = 440
 tbl_y = 108
 H = table_height(tbl_y, 16)
 sites = frame("Sites up", "Status code and response time for every site in @Resources\\Local\\sites.txt, checked in parallel once a "
-              "minute. Click a row to open the site.", "Sites up", "// http status", W, H,
-              extra_rainmeter=ON_REFRESH + context(("Check now", RUN_NOW), ("Edit the site list", '["#@#Local\\sites.txt"]')),
+              "minute. Worst first: down, error, then slowest. Scroll for the rest of a long list. Click a row to open the site.",
+              "Sites up", "// http status, worst first", W, H,
+              extra_rainmeter=ON_REFRESH + SCROLL + context(("Check now", RUN_NOW), ("Edit the site list", '["#@#Local\\sites.txt"]')),
               measures=runcommand("Sites.ps1") + script("Sites.lua"))
 sites += status_box(51, W)
 sites += gtable("R", 16, tbl_y, W, [("Site", "Site", 24, "L", 250), ("Code", "Code", 318, "R", 40), ("Ms", "Time", 376, "R", 54),
                                     ("State", "State", W - 24, "R", 52)], hit=True)
+sites += scrollbar("R", 16, tbl_y, W, H)
 write("Sites", sites)
 
 # ------------------------------------------------------------------- TALKERS

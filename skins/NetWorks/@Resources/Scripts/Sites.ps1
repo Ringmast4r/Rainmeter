@@ -1,7 +1,7 @@
 # Net // Works Sites card: GETs every site in Local\sites.txt in parallel (headers only) and prints
 #   S=<site>|<status code, 0 = no answer>|<ms>|<error>
 . "$PSScriptRoot\Conf.ps1"
-$sites = @(Get-Conf 'sites.txt' | ForEach-Object { $_.Trim() } | Select-Object -First 16)
+$sites = @(Get-Conf 'sites.txt' | ForEach-Object { $_.Trim() } | Select-Object -First 64)
 if (-not $sites) { 'Err=add sites to @Resources\Local\sites.txt'; return }
 
 Add-Type -AssemblyName System.Net.Http
