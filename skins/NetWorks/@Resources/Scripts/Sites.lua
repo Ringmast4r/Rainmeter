@@ -1,7 +1,8 @@
 -- Net // Works Sites card. Runs Sites.ps1 every PERIOD seconds. Up = any answer below 500 (401/403 are gated
--- sites answering); 5xx or no answer = down. Time goes yellow past SLOW ms, red past VERY_SLOW.
+-- sites answering, code in yellow); 5xx or no answer = down, in red. A site that is up but takes SLOW ms reads
+-- SLOW in yellow, VERY_SLOW in red (cold connection each check: DNS, TLS and the response headers).
 -- Worst first: down, error, check, then slowest. ROWS show at a time; the mouse wheel scrolls STEP rows.
-local PERIOD, ROWS, SLOW, VERY_SLOW, STEP = 60, 16, 1500, 4000, 3
+local PERIOD, ROWS, SLOW, VERY_SLOW, STEP = 60, 16, 350, 1000, 3
 local C, K, run
 local tick, lastOk = 0, nil
 local sites, top, bar = {}, 0, nil
@@ -33,10 +34,9 @@ local function draw()
     for i = 1, ROWS do
         local s, r = sites[top + i], 'R' .. i
         if s then
-            C.cell(r, 'Site', s.shown, s.sc == K.CRIT and K.CRIT or K.INK)
+            C.cell(r, 'Site', s.shown, s.sc)
             C.cell(r, 'Code', s.code > 0 and tostring(s.code) or '-', s.cc)
-            C.cell(r, 'Ms', s.code > 0 and (s.ms .. ' ms') or (s.err ~= '' and s.err or '-'),
-                   s.code > 0 and C.level(K, s.ms, SLOW, VERY_SLOW) or K.CRIT)
+            C.cell(r, 'Ms', s.code > 0 and (s.ms .. ' ms') or (s.err ~= '' and s.err or '-'), s.code > 0 and s.tc or K.CRIT)
             C.cell(r, 'State', s.state, s.sc)
             C.set(r .. 'Hit', 'LeftMouseUpAction', '["' .. s.url .. '"]')
             C.set(r .. 'Hit', 'MouseActionCursor', '1')
@@ -70,13 +70,19 @@ function Parse()
     for i, line in ipairs(lists.S) do
         local f = C.split(line)
         local site, code, ms, err = f[1], tonumber(f[2]) or 0, tonumber(f[3]) or 0, f[4] or ''
+        -- sc = site and state colour, cc = code colour, tc = time colour
         local s = { idx = i, code = code, ms = ms, err = err, state = 'UP', sc = K.INK, cc = K.MID, rank = 0 }
+        s.tc = C.level(K, ms, SLOW, VERY_SLOW)
         s.shown = C.demo() and string.format('site-%02d.example', i) or site:gsub('^https?://', ''):gsub('/$', '')
         s.url = site:match('^https?://') and site or ('https://' .. site)
         if code == 0 then s.state, s.sc, s.rank = 'DOWN', K.CRIT, 3
         elseif code >= 500 then s.state, s.sc, s.cc, s.rank = 'ERROR', K.CRIT, K.CRIT, 2
-        elseif code >= 400 and code ~= 401 and code ~= 403 then s.state, s.sc, s.cc, s.rank = 'CHECK', K.WARN, K.WARN, 1 end
-        if s.sc == K.CRIT then down[#down + 1] = s.shown end
+        elseif code >= 400 and code ~= 401 and code ~= 403 then s.state, s.sc, s.cc, s.rank = 'CHECK', K.WARN, K.WARN, 1
+        else
+            if code >= 400 then s.cc = K.WARN end
+            if s.tc ~= K.INK then s.state, s.sc = 'SLOW', s.tc end
+        end
+        if s.rank >= 2 then down[#down + 1] = s.shown end
         if code > 0 and ms > slowest then slowest, slowName = ms, s.shown end
         sites[i] = s
     end
