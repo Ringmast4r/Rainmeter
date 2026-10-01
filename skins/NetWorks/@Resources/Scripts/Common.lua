@@ -97,14 +97,15 @@ function C.level(K, v, warn, crit)
     return K.INK
 end
 
--- a stat box from the generator's statboxes(): value, sub line, and the border takes the value's colour
+-- a stat box from the generator's statboxes(): value, sub line, and the border takes the value's colour;
+-- fill marks a box that is switched on (a table filter)
 local rects = {}
-function C.box(K, key, val, sub, col, subCol)
+function C.box(K, key, val, sub, col, subCol, fill)
     rects[key] = rects[key] or SKIN:GetMeter(key .. 'Box'):GetOption('Shape'):match('^Rectangle ([%d.,]+)')
     C.set(key .. 'Val', 'Text', val); C.set(key .. 'Val', 'FontColor', col or K.INK)
     C.set(key .. 'Sub', 'Text', sub or ''); C.set(key .. 'Sub', 'FontColor', subCol or K.MID)
     C.set(key .. 'Box', 'Shape', string.format('Rectangle %s | Fill Color %s | StrokeWidth 2 | Stroke Color %s',
-        rects[key], K.BG, col or K.INK))
+        rects[key], fill or K.BG, col or K.INK))
 end
 
 function C.cell(row, key, text, color)

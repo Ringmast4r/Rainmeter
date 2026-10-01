@@ -1,5 +1,5 @@
-"""Generates the Net // Works Speed, VPN, Wi-Fi / Eth, Homelab, Sites, Talkers, Wi-Fi survey, LAN and Deadlines
-cards (shared frame and styles).
+"""Generates the Net // Works Speed, VPN, Wi-Fi / Eth, Homelab, Sites, Talkers, Egress / ingress, Wi-Fi survey, LAN
+and Deadlines cards (shared frame and styles).
 Run from anywhere; writes into the skin folders next to @Resources."""
 import pathlib
 
@@ -450,7 +450,7 @@ Text=-
 
 
 # =================================================================== LAB CARDS
-# Homelab, Sites, Talkers, WiFi-Survey, LAN and Deadlines. Personal settings live in @Resources\Local\
+# Homelab, Sites, Talkers, Egress-Ingress, WiFi-Survey, LAN and Deadlines. Personal settings live in @Resources\Local\
 # (never committed); @Resources\Examples\ holds the shipped templates. Shared Lua: Scripts\Common.lua.
 def write(folder, text):
     (ROOT / folder).mkdir(exist_ok=True)
@@ -473,8 +473,9 @@ SCROLL = ('MouseScrollUpAction=[!CommandMeasure mScript "Scroll(-1)"]\n'
           'MouseScrollDownAction=[!CommandMeasure mScript "Scroll(1)"]\n')
 
 
-def statboxes(boxes, y, W, h=64):
-    """Stat boxes across the card, the Speed card's look: caption, big value, small sub line."""
+def statboxes(boxes, y, W, h=64, hit=None):
+    """Stat boxes across the card, the Speed card's look: caption, big value, small sub line.
+    hit: {key: (action, tooltip)} makes those boxes clickable."""
     gap = 8
     bw = (W - 36 - gap * (len(boxes) - 1)) / len(boxes)
     s = ""
@@ -516,6 +517,19 @@ Y={y+48}
 W={round(bw)-20}
 H=12
 Text=
+"""
+        if hit and key in hit:
+            s += f"""
+[{key}Hit]
+Meter=Image
+X={x0+1}
+Y={y}
+W={round(bw)-2}
+H={h}
+SolidColor=0,0,0,1
+LeftMouseUpAction={hit[key][0]}
+ToolTipText={hit[key][1]}
+MouseActionCursorName=Hand
 """
     return s
 
@@ -695,6 +709,41 @@ talk += gtable("R", 16, tbl_y, W, [("Proc", "Program", 24, "L", 108), ("Ip", "Re
                                    ("Where", "Where", 404, "L", 96), ("Port", "Port", W - 56, "R", 40), ("N", "N", W - 24, "R", 26)])
 write("Talkers", talk)
 
+# ---------------------------------------------------------- EGRESS / INGRESS
+W = 600
+tbl_y = 124
+H = table_height(tbl_y, 16)
+flow = frame("Egress / ingress", "What is going where: every connection this PC holds, split into outbound (this PC called out) and "
+             "inbound (something connected in), plus the ports it listens on. Inbound from the internet is red, from the LAN "
+             "yellow, threat-listed addresses red. Click a box to show only that kind; scroll for the rest. The header is "
+             "live traffic out and in. Owners come from IP // Revealer (path in @Resources\\Local\\talkers.txt), LAN names from "
+             "the LAN and Homelab cards.", "Egress / ingress", "// what is going where", W, H,
+             extra_rainmeter=ON_REFRESH + SCROLL + context(("Check now", RUN_NOW), ("Set the IP // Revealer path", '["#@#Local\\talkers.txt"]'),
+                                                           ("Name LAN devices", '["#@#Local\\lan_names.txt"]')),
+             measures=runcommand("Flows.ps1") + """
+[mIn]
+Measure=NetIn
+Interface=Best
+
+[mOut]
+Measure=NetOut
+Interface=Best
+""" + script("Flows.lua"))
+
+
+def view(kind, what):
+    return (f"""[!CommandMeasure mScript "View('{kind}')"]""", f"Show only {what}; click again for everything")
+
+
+flow += statboxes([("Out", "Outbound"), ("In", "Inbound"), ("Lis", "Listening"), ("Flag", "Threat-listed")], 51, W,
+                  hit={"Out": view("out", "outbound connections"), "In": view("in", "inbound connections"),
+                       "Lis": view("listen", "listening ports, including the ones only this PC can reach"),
+                       "Flag": view("flag", "threat-listed addresses")})
+flow += gtable("R", 16, tbl_y, W, [("Dir", "Dir", 24, "L", 46), ("Proc", "Program", 74, "L", 104), ("Peer", "Peer", 182, "L", 136),
+                                   ("Who", "Who / what", 322, "L", 150), ("Port", "Port", W - 62, "R", 62), ("N", "N", W - 24, "R", 30)])
+flow += scrollbar("R", 16, tbl_y, W, H)
+write("Egress-Ingress", flow)
+
 # --------------------------------------------------------------- WI-FI SURVEY
 W = 600
 CH24 = list(range(1, 14))
@@ -853,4 +902,4 @@ Text=days
 dl += gtable("R", 6, tbl_y, W, [("Name", "Deadline", 24, "L", 170), ("Date", "Date", 200, "L", 80), ("Days", "Days", W - 24, "R", 36)])
 write("Deadlines", dl)
 
-print("written: Speed, VPN, WiFi-Eth, Homelab, Sites, Talkers, WiFi-Survey, LAN, Deadlines")
+print("written: Speed, VPN, WiFi-Eth, Homelab, Sites, Talkers, Egress-Ingress, WiFi-Survey, LAN, Deadlines")
