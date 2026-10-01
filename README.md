@@ -53,13 +53,14 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 **Nothing phones home.** No account, no telemetry, no subscription, no ads. You download it, it runs.
 
 
-<a id="the-skins-19-collections"></a>
-## `> the_skins_19_collections`
+<a id="the-skins-20-collections"></a>
+## `> the_skins_20_collections`
 
 | Folder | Description |
 |:--|:--|
 | **Top 20 - Process Leaderboard** | Six side-by-side top-20 leaderboards: CPU, memory, swap, disk I/O, GPU (per engine), VRAM |
-| **NWModern - Processes and Uptime** | Top-20 boards for CPU, memory, GPU and GPU memory in two styles (dark modern and Sin City monochrome), plus an uptime card with a dark/light toggle |
+| **NWModern - Processes** | Dark glass top-20 board: CPU, memory, GPU and GPU memory ranked in four columns, values tinted by load |
+| **NetWorks - Processes and Uptime** | Net // Works black-and-white boards: the same top-20 board plus an uptime card, with white/yellow/red thresholds and a dark/light toggle |
 | **Dark - Weather & System Monitor** | Current weather, rain forecast, CPU/RAM rings, uptime |
 | **Simplic - System Monitoring Suite** | Clean system widgets: CPU, RAM, disk, network, weather, time |
 | **Illustro - Clean System Widgets** | Minimal system monitoring (clock, disk, network, system, recycle bin) |
@@ -178,13 +179,13 @@ Everything comes from the UsageMonitor plugin that ships with Rainmeter, one per
   <img width="340" src="screenshots/nwmodern-uptime.png"/>
 </p>
 
-There are two top-20 boards here, built to run side by side and fed by the same data, so you can compare the two styles live:
+There are two top-20 boards, in two skin folders, built to run side by side so you can compare the styles live:
 
-| Skin | Look |
-|:--|:--|
-| `Processes` | Dark glass, one accent colour per resource, CPU and GPU values tinted by load |
-| `ProcessesSinCity` | The Sin City house style: black and white, Courier New, square 2-3px borders, black table headers. Values step from ink to yellow to red at thresholds you can set in the INI. Has a dark/light toggle |
-| `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Sin City style, with a dark/light toggle |
+| Folder | Skin | Look |
+|:--|:--|:--|
+| `NWModern - Processes` | `Processes` | Dark glass, one accent colour per resource, CPU and GPU values tinted by load |
+| `NetWorks - Processes and Uptime` | `Processes` | The Net // Works house style: black and white, Courier New, square 2-3px borders, black table headers. Values step white, yellow, red at thresholds you set in the INI. Has a dark/light toggle |
+| `NetWorks - Processes and Uptime` | `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Same house style and toggle |
 
 Each board shows four columns at once, and each column ranks the 20 processes using the most of one resource. Processes are grouped by name, the way Task Manager groups them:
 
@@ -195,9 +196,9 @@ Each board shows four columns at once, and each column ranks the 20 processes us
 | GPU | the process's busiest GPU engine, not the sum of all engines |
 | GPU mem | dedicated + shared GPU memory committed (Task Manager's "GPU memory") |
 
-**How it gets the data.** `@Resources\Scripts\Collect.ps1` reads the Windows performance counters through WMI every 2 seconds and writes `@Resources\Data\procs.txt`. `Procs.lua` sorts that file four ways and draws the boards. The collector starts hidden when a board loads, and a mutex keeps it to one copy no matter how many boards are open. It shuts itself off about 20 seconds after the last board closes, because it watches a heartbeat file the boards keep updating. Nothing is left running in the background.
+**How it gets the data.** `@Resources\Scripts\Collect.ps1` reads the Windows performance counters through WMI every 2 seconds and writes `@Resources\Data\procs.txt`. `Procs.lua` sorts that file four ways and draws the boards. The collector starts hidden when a board loads. Each skin folder runs its own collector, and a mutex stops duplicates within a folder. It shuts itself off about 20 seconds after the last board closes, because it watches a heartbeat file the boards keep updating. Nothing is left running in the background.
 
-**Dark/light.** Click the `LIGHT` / `DARK` button in the corner of the Sin City skins. Both palettes live in `@Resources\Themes\`. The 3,000-line board INIs are generated: edit `@Resources\Tools\generate_*.py`, rerun it, then refresh.
+**Dark/light.** Click the `LIGHT` / `DARK` button in the corner of the Net // Works skins. Both palettes live in `@Resources\Themes\`. The 3,000-line board INIs are generated: edit `@Resources\Tools\generate_processes.py` in that folder, rerun it, then refresh.
 
 <a id="system-monitoring"></a>
 ## `> system_monitoring`

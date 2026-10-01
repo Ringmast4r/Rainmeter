@@ -3,7 +3,7 @@ modern board so both share Procs.lua and the same collector data."""
 import pathlib
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]   # skin root folder
-OUT = ROOT / "ProcessesSinCity/ProcessesSinCity.ini"
+OUT = ROOT / "Processes/Processes.ini"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 PW, GAP, PAD, ROWS = 220, 8, 12, 20
@@ -15,7 +15,7 @@ RIGHT = W - PAD
 PANELS = [("cpu", "CPU", "CPU %"), ("ram", "Memory", "Memory"),
           ("gpu", "GPU", "GPU %"), ("gmem", "GPU Memory", "GPU Mem")]
 
-s = f"""; NWModern Process Monitor - "Sin City" house style. Shares Procs.lua and the
+s = f"""; Net // Works Process Monitor - "Sin City" house style. Shares Procs.lua and the
 ; collector with the modern board, so the two can run side by side live.
 [Rainmeter]
 Update=1000
@@ -26,7 +26,7 @@ ContextTitle=Open Task Manager
 ContextAction=["taskmgr.exe"]
 
 [Metadata]
-Name=NWModern Processes (Sin City)
+Name=Net // Works Processes
 Author=ringmast4r
 Information=Top 20 processes by CPU, memory, GPU and GPU memory side by side, in the Sin City monochrome house style with a dark/light toggle.
 Version=1.0

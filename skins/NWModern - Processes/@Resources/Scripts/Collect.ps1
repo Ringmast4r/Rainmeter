@@ -13,10 +13,12 @@ param(
     [int]$StartGrace  = 60
 )
 
-$mutex = New-Object System.Threading.Mutex($false, 'Local\NWModernProcCollector')
-if (-not $mutex.WaitOne(0)) { exit 0 }
-
 $dataDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'Data'
+# One collector per skin folder: the mutex name comes from this folder's Data path.
+$sha = [Security.Cryptography.SHA1]::Create()
+$tag = -join ($sha.ComputeHash([Text.Encoding]::UTF8.GetBytes($dataDir.ToLowerInvariant()))[0..5] | ForEach-Object { $_.ToString('x2') })
+$mutex = New-Object System.Threading.Mutex($false, "Local\RainmeterProcCollector_$tag")
+if (-not $mutex.WaitOne(0)) { exit 0 }
 New-Item -ItemType Directory -Force -Path $dataDir | Out-Null
 $outFile  = Join-Path $dataDir 'procs.txt'
 $tmpFile  = Join-Path $dataDir 'procs.tmp'
