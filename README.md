@@ -60,7 +60,7 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 |:--|:--|
 | **Top 20 - Process Leaderboard** | Six side-by-side top-20 leaderboards: CPU, memory, swap, disk I/O, GPU (per engine), VRAM |
 | **NWModern - Processes** | Dark glass top-20 board: CPU, memory, GPU and GPU memory ranked in four columns, values tinted by load |
-| **NetWorks - Processes and Uptime** | Net // Works black-and-white boards: the same top-20 board, an uptime card and a live IP card (IPv4/IPv6, click to copy), with white/yellow/red thresholds and a dark/light toggle |
+| **NetWorks - Processes and Uptime** | Net // Works black-and-white boards: the same top-20 board, an uptime card, a live IP card (IPv4/IPv6, click to copy), live speed, VPN status and Wi-Fi signal cards, with white/yellow/red thresholds and a dark/light toggle |
 | **Dark - Weather & System Monitor** | Current weather, rain forecast, CPU/RAM rings, uptime |
 | **Simplic - System Monitoring Suite** | Clean system widgets: CPU, RAM, disk, network, weather, time |
 | **Illustro - Clean System Widgets** | Minimal system monitoring (clock, disk, network, system, recycle bin) |
@@ -186,7 +186,10 @@ There are two top-20 boards, in two skin folders, built to run side by side so y
 | `NWModern - Processes` | `Processes` | Dark glass, one accent colour per resource, CPU and GPU values tinted by load |
 | `NetWorks - Processes and Uptime` | `Processes` | The Net // Works house style: black and white, Courier New, square 2-3px borders, black table headers. Values step white, yellow, red at thresholds you set in the INI. Has a dark/light toggle |
 | `NetWorks - Processes and Uptime` | `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Same house style and toggle |
-| `NetWorks - Processes and Uptime` | `IP` | Live public and local IPv4 / IPv6. Click an address to copy it, or COPY ALL. Looks up every 15 s, so a VPN switch shows within seconds, and a changed address turns yellow for a minute. Public addresses come from ipify.org. If IPv6 is missing it says why (turned off on the adapter, or no IPv6 route) |
+| `NetWorks - Processes and Uptime` | `IP` | Live public and local IPv4 / IPv6. Click an address to copy it, or COPY ALL. Looks up every 15 s, so a VPN switch shows within seconds, and a changed address turns yellow for a minute. Public addresses come from ipify.org. If IPv6 is missing it says why (tur| `NetWorks - Processes and Uptime` | `Speed` | Live download and upload in Mbps on the best-route adapter, a ~7 minute graph, peaks and data used since load. Shows current traffic, not a speed test |
+| `NetWorks - Processes and Uptime` | `VPN` | Which VPN is connected (Proton, Mullvad, Net // Works or any other tunnel) and whether it actually carries your traffic, judged by the default route. A yellow NOT PROTECTED banner when traffic goes out directly |
+| `NetWorks - Processes and Uptime` | `WiFi` | Network name, signal strength as bars, % and approximate dBm (yellow below 60%, red below 35%, editable), security, radio type, channel and band, link rates |
+ned off on the adapter, or no IPv6 route) |
 
 Each board shows four columns at once, and each column ranks the 20 processes using the most of one resource. Processes are grouped by name, the way Task Manager groups them:
 
