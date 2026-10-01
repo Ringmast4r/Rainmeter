@@ -1,0 +1,3 @@
+# Names for the LAN watch card: a MAC address or an IP address, then = and a label. One per line.
+# AA:BB:CC:DD:EE:FF = Living room TV
+# 192.168.1.1 = Router

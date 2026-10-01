@@ -1,0 +1,4 @@
+# Who's talking card. Optional: point Revealer= at an IP // Revealer project folder for offline owner, city and
+# threat-list lookups. Without it the card still lists programs, addresses and ports.
+Revealer=
+Python=py -3

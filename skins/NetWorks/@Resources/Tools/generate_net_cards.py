@@ -1,4 +1,5 @@
-"""Generates the Net // Works Speed, VPN and Wi-Fi cards (shared frame and styles).
+"""Generates the Net // Works Speed, VPN, Wi-Fi / Eth, Homelab, Sites, Talkers, Wi-Fi survey, LAN and Deadlines
+cards (shared frame and styles).
 Run from anywhere; writes into the skin folders next to @Resources."""
 import pathlib
 
@@ -446,4 +447,384 @@ Text=-
 """
 (ROOT / "WiFi-Eth").mkdir(exist_ok=True)
 (ROOT / "WiFi-Eth" / "WiFi-Eth.ini").write_text(wifi, encoding="utf-8")
-print("written: Speed/Speed.ini, VPN/VPN.ini, WiFi-Eth/WiFi-Eth.ini")
+
+
+# =================================================================== LAB CARDS
+# Homelab, Sites, Talkers, WiFi-Survey, LAN and Deadlines. Personal settings live in @Resources\Local\
+# (never committed); @Resources\Examples\ holds the shipped templates. Shared Lua: Scripts\Common.lua.
+def write(folder, text):
+    (ROOT / folder).mkdir(exist_ok=True)
+    (ROOT / folder / f"{folder}.ini").write_text(text, encoding="utf-8")
+
+
+def context(*items):
+    """items: (title, action) pairs for the right-click menu."""
+    s = ""
+    for i, (title, action) in enumerate(items):
+        n = "" if i == 0 else str(i + 1)
+        s += f"ContextTitle{n}={title}\nContextAction{n}={action}\n"
+    return s
+
+
+RUN_NOW = '[!CommandMeasure mRun "Run"]'
+ON_REFRESH = f"OnRefreshAction={RUN_NOW}\n"
+
+
+def statboxes(boxes, y, W, h=64):
+    """Stat boxes across the card, the Speed card's look: caption, big value, small sub line."""
+    gap = 8
+    bw = (W - 36 - gap * (len(boxes) - 1)) / len(boxes)
+    s = ""
+    for i, (key, cap) in enumerate(boxes):
+        x0 = round(18 + i * (bw + gap))
+        s += f"""
+[{key}Box]
+Meter=Shape
+Shape=Rectangle {x0+1},{y},{round(bw)-2},{h} | Fill Color #cBg# | StrokeWidth 2 | Stroke Color #cFg#
+
+[{key}Cap]
+Meter=String
+MeterStyle=sCap
+X={x0+10}
+Y={y+6}
+Text={cap}
+
+[{key}Val]
+Meter=String
+FontFace=#fMono#
+FontSize=15
+StringStyle=Bold
+FontColor=#cFg#
+AntiAlias=1
+ClipString=1
+X={x0+10}
+Y={y+19}
+W={round(bw)-20}
+H=26
+Text=--
+
+[{key}Sub]
+Meter=String
+MeterStyle=sCap
+StringCase=None
+ClipString=1
+X={x0+10}
+Y={y+48}
+W={round(bw)-20}
+H=12
+Text=
+"""
+    return s
+
+
+def status_box(y, W, h=46):
+    """The VPN card's banner: caption + one big line. Lua restyles it per state."""
+    return f"""
+[MStatusBox]
+Meter=Shape
+Shape=Rectangle 19,{y},{W-38},{h} | Fill Color #cBg# | StrokeWidth 2 | Stroke Color #cMid#
+
+[MStatusCap]
+Meter=String
+MeterStyle=sCap
+X=28
+Y={y+6}
+Text=checking...
+
+[MStatusVal]
+Meter=String
+FontFace=#fMono#
+FontSize=13
+StringStyle=Bold
+StringCase=Upper
+FontColor=#cFg#
+AntiAlias=1
+ClipString=1
+X=28
+Y={y+19}
+W={W-56}
+H=22
+Text=--
+"""
+
+
+def gtable(prefix, n, y0, W, cols, row_h=20, hit=False):
+    """Ink header bar at y0, then n rows named <prefix><i><key>. cols: (key, header, x, 'L'|'R', width)."""
+    s = f"""
+[{prefix}HeadBar]
+Meter=Shape
+Shape=Rectangle 18,{y0},{W-36},18 | Fill Color #cFg# | StrokeWidth 0
+"""
+    for key, head, x, align, w in cols:
+        s += f"""
+[{prefix}Head{key}]
+Meter=String
+MeterStyle=sHead
+{"StringAlign=Right" if align == "R" else ""}
+X={x}
+Y={y0+3}
+Text={head}
+"""
+    for i in range(1, n + 1):
+        y = y0 + 20 + (i - 1) * row_h
+        if i % 2 == 0:
+            s += f"""
+[{prefix}{i}Bg]
+Meter=Image
+X=18
+Y={y}
+W={W-36}
+H={row_h}
+SolidColor=#cAlt#
+"""
+        if hit:
+            s += f"""
+[{prefix}{i}Hit]
+Meter=Image
+X=18
+Y={y}
+W={W-36}
+H={row_h}
+SolidColor=0,0,0,1
+"""
+        for key, head, x, align, w in cols:
+            s += f"""
+[{prefix}{i}{key}]
+Meter=String
+MeterStyle=sCell
+{"StringAlign=Right" if align == "R" else ""}
+X={x}
+Y={y+4}
+W={w}
+H=14
+Text=
+"""
+    return s
+
+
+def table_height(y0, n, row_h=20):
+    return y0 + 20 + n * row_h + 8 + 32
+
+
+# ------------------------------------------------------------------- HOMELAB
+W = 600
+GCOLS, GROWS, PITCH = 40, 5, 14
+grid_y = 140
+tbl_y = grid_y + GROWS * PITCH + 10
+H = table_height(tbl_y, 12)
+lab = frame("Homelab", "Proxmox host health and every guest: host CPU, memory, IO wait and load, one dot per container or VM, "
+            "and the guests that are down or busiest. One SSH call with your own key to the host set in @Resources\\Local\\homelab.txt.",
+            "Homelab", "// proxmox", W, H,
+            extra_rainmeter=ON_REFRESH + context(("Check now", RUN_NOW), ("Set the Proxmox host", '["#@#Local\\homelab.txt"]')),
+            measures=runcommand("Homelab.ps1") + script("Homelab.lua"))
+lab += statboxes([("Cpu", "Host CPU"), ("Mem", "Memory"), ("Wait", "IO wait"), ("Guests", "Guests running")], 51, W)
+lab += f"""
+[MGridCap]
+Meter=String
+MeterStyle=sCap
+X=18
+Y={grid_y - 14}
+Text=All guests  /  ink running  /  yellow busy  /  red down  /  grey off
+"""
+for i in range(GCOLS * GROWS):
+    r, c = divmod(i, GCOLS)
+    lab += f"""
+[D{i+1}]
+Meter=Image
+X={19 + c * PITCH}
+Y={grid_y + r * PITCH}
+W={PITCH - 3}
+H={PITCH - 3}
+SolidColor=#cTrack#
+Hidden=1
+"""
+lab += gtable("R", 12, tbl_y, W, [("Id", "ID", 24, "L", 40), ("Name", "Guest", 66, "L", 180), ("State", "State", 254, "L", 70),
+                                  ("Cpu", "CPU", 372, "R", 50), ("Mem", "Memory", 500, "R", 120), ("Up", "Uptime", W - 24, "R", 66)])
+write("Homelab", lab)
+
+# --------------------------------------------------------------------- SITES
+W = 440
+tbl_y = 108
+H = table_height(tbl_y, 16)
+sites = frame("Sites up", "Status code and response time for every site in @Resources\\Local\\sites.txt, checked in parallel once a "
+              "minute. Click a row to open the site.", "Sites up", "// http status", W, H,
+              extra_rainmeter=ON_REFRESH + context(("Check now", RUN_NOW), ("Edit the site list", '["#@#Local\\sites.txt"]')),
+              measures=runcommand("Sites.ps1") + script("Sites.lua"))
+sites += status_box(51, W)
+sites += gtable("R", 16, tbl_y, W, [("Site", "Site", 24, "L", 250), ("Code", "Code", 318, "R", 40), ("Ms", "Time", 376, "R", 54),
+                                    ("State", "State", W - 24, "R", 52)], hit=True)
+write("Sites", sites)
+
+# ------------------------------------------------------------------- TALKERS
+W = 600
+tbl_y = 124
+H = table_height(tbl_y, 16)
+talk = frame("Who's talking", "Which programs hold connections to the internet, and to whom: owner network, city and country, port "
+             "and count. Addresses are looked up offline in IP // Revealer when it is installed (path in @Resources\\Local\\talkers.txt); "
+             "threat-listed addresses turn red.", "Who's talking", "// outbound connections", W, H,
+             extra_rainmeter=ON_REFRESH + context(("Check now", RUN_NOW), ("Set the IP // Revealer path", '["#@#Local\\talkers.txt"]')),
+             measures=runcommand("Talkers.ps1") + script("Talkers.lua"))
+talk += statboxes([("Conns", "Connections"), ("Hosts", "Remote hosts"), ("Procs", "Programs"), ("Flag", "Threat-listed")], 51, W)
+talk += gtable("R", 16, tbl_y, W, [("Proc", "Program", 24, "L", 108), ("Ip", "Remote", 136, "L", 120), ("Org", "Owner", 260, "L", 140),
+                                   ("Where", "Where", 404, "L", 96), ("Port", "Port", W - 56, "R", 40), ("N", "N", W - 24, "R", 26)])
+write("Talkers", talk)
+
+# --------------------------------------------------------------- WI-FI SURVEY
+W = 600
+CH24 = list(range(1, 14))
+CH5 = [36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165]
+tbl_y = 140
+H = table_height(tbl_y, 15)
+srv = frame("Wi-Fi survey", "Every Wi-Fi network in range: name, access point vendor (from its BSSID), channel, band, signal and "
+            "security, plus how crowded each 2.4 and 5 GHz channel is. Asks Windows for a fresh scan each cycle.",
+            "Wi-Fi survey", "// networks in range", W, H,
+            extra_rainmeter=ON_REFRESH + context(("Scan now", RUN_NOW)),
+            measures=runcommand("Survey.ps1") + script("Survey.lua"))
+srv += """
+[sTick]
+FontFace=#fMono#
+FontSize=6
+StringStyle=Bold
+StringAlign=Center
+FontColor=#cMid#
+AntiAlias=1
+
+[MBand24Box]
+Meter=Shape
+Shape=Rectangle 19,51,190,78 | Fill Color #cBg# | StrokeWidth 2 | Stroke Color #cFg#
+
+[MBand24Cap]
+Meter=String
+MeterStyle=sCap
+X=28
+Y=57
+Text=2.4 GHz
+
+[MBand5Box]
+Meter=Shape
+Shape=Rectangle 217,51,364,78 | Fill Color #cBg# | StrokeWidth 2 | Stroke Color #cFg#
+
+[MBand5Cap]
+Meter=String
+MeterStyle=sCap
+X=226
+Y=57
+Text=5 GHz
+"""
+for band, chans, x0, pitch, bw, ticks in [("24", CH24, 28, 13, 9, CH24), ("5", CH5, 226, 14, 10, [36, 52, 100, 120, 149, 165])]:
+    for k, ch in enumerate(chans):
+        x = x0 + k * pitch
+        srv += f"""
+[C{band}_{ch}]
+Meter=Image
+X={x}
+Y=109
+W={bw}
+H=2
+SolidColor=#cTrack#
+ToolTipText=channel {ch}
+"""
+        if ch in ticks:
+            srv += f"""
+[L{band}_{ch}]
+Meter=String
+MeterStyle=sTick
+X={x + bw // 2}
+Y=114
+Text={ch}
+"""
+srv += gtable("R", 15, tbl_y, W, [("Ssid", "Network", 24, "L", 150), ("Vendor", "Access point vendor", 178, "L", 146),
+                                  ("Ch", "Ch", 356, "R", 28), ("Band", "Band", 364, "L", 56), ("Sig", "Signal", 464, "R", 40),
+                                  ("Sec", "Security", 472, "L", 108)])
+write("WiFi-Survey", srv)
+
+# ----------------------------------------------------------------------- LAN
+W = 600
+tbl_y = 124
+H = table_height(tbl_y, 16)
+lan = frame("LAN watch", "Every device on your local network from a ping sweep every 5 minutes: address, name, vendor (from its MAC) "
+            "and when it was first seen. Devices first seen in the last 24 hours turn yellow. Label devices in "
+            "@Resources\\Local\\lan_names.txt; Proxmox containers are named by the Homelab card.", "LAN watch", "// local network", W, H,
+            extra_rainmeter=ON_REFRESH + context(("Sweep now", '[!CommandMeasure mSweep "Run"]'), ("Name devices", '["#@#Local\\lan_names.txt"]')),
+            measures=runcommand("Lan.ps1") + """
+[mSweep]
+Measure=Plugin
+Plugin=RunCommand
+Program=powershell.exe
+Parameter=-NoProfile -ExecutionPolicy Bypass -File "#@#Scripts\\Lan.ps1" -Sweep
+State=Hide
+OutputType=UTF8
+Timeout=30000
+FinishAction=[!CommandMeasure mScript "Parse('mSweep')"]
+""" + script("Lan.lua"))
+lan += statboxes([("Dev", "Devices"), ("New", "New today"), ("Ct", "Containers"), ("Net", "Subnet")], 51, W)
+lan += gtable("R", 16, tbl_y, W, [("Ip", "IP", 24, "L", 88), ("Name", "Name", 114, "L", 150), ("Vendor", "Vendor", 268, "L", 146),
+                                  ("Mac", "MAC", 418, "L", 110), ("Seen", "Seen", W - 24, "R", 44)])
+write("LAN", lan)
+
+# ----------------------------------------------------------------- DEADLINES
+W = 340
+tbl_y = 130
+H = table_height(tbl_y, 6)
+dl = frame("Deadlines", "Countdown to the dates in @Resources\\Local\\deadlines.txt (one per line: 2026-10-11 | Name). Yellow inside "
+           "30 days, red inside 7.", "Deadlines", "// countdown", W, H,
+           extra_rainmeter=context(("Edit deadlines", '["#@#Local\\deadlines.txt"]')),
+           measures=script("Deadlines.lua"))
+dl += f"""
+[MNextBox]
+Meter=Shape
+Shape=Rectangle 19,51,{W-38},68 | Fill Color #cBg# | StrokeWidth 2 | Stroke Color #cFg#
+
+[MNextCap]
+Meter=String
+MeterStyle=sCap
+X=28
+Y=57
+Text=Next
+
+[MNextName]
+Meter=String
+FontFace=#fMono#
+FontSize=13
+StringStyle=Bold
+FontColor=#cFg#
+AntiAlias=1
+ClipString=1
+X=28
+Y=70
+W=200
+H=22
+Text=--
+
+[MNextDate]
+Meter=String
+MeterStyle=sCap
+StringCase=None
+X=28
+Y=100
+Text=
+
+[MNextDays]
+Meter=String
+FontFace=#fMono#
+FontSize=22
+StringStyle=Bold
+StringAlign=Right
+FontColor=#cFg#
+AntiAlias=1
+X={W-28}
+Y=60
+Text=--
+
+[MNextUnit]
+Meter=String
+MeterStyle=sCap
+StringAlign=Right
+X={W-28}
+Y=100
+Text=days
+"""
+dl += gtable("R", 6, tbl_y, W, [("Name", "Deadline", 24, "L", 170), ("Date", "Date", 200, "L", 80), ("Days", "Days", W - 24, "R", 36)])
+write("Deadlines", dl)
+
+print("written: Speed, VPN, WiFi-Eth, Homelab, Sites, Talkers, WiFi-Survey, LAN, Deadlines")

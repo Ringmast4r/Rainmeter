@@ -1,0 +1,2 @@
+# Proxmox host for the Homelab card. The card runs one SSH call with your own key (BatchMode, no password prompts).
+Host=root@pve.example.lan

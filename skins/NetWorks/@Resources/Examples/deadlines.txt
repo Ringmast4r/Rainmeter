@@ -1,0 +1,3 @@
+# Deadlines card: one per line,  YYYY-MM-DD | Name . Lines starting with # are ignored.
+2030-01-01 | Example: renew the domain
+2030-06-30 | Example: file the report

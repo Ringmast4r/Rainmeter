@@ -60,7 +60,7 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 |:--|:--|
 | **Top 20 - Process Leaderboard** | Six side-by-side top-20 leaderboards: CPU, memory, swap, disk I/O, GPU (per engine), VRAM |
 | **NWModern - Processes** | Dark glass top-20 board: CPU, memory, GPU and GPU memory ranked in four columns, values tinted by load |
-| **NetWorks** | Net // Works black-and-white boards: the same top-20 board, an uptime card, a live IP card (IPv4/IPv6, click to copy), live speed, VPN status, and a Wi-Fi / Ethernet card with a WI-FI / ETH switch, with white/yellow/red thresholds and a dark/light toggle |
+| **NetWorks** | Net // Works black-and-white boards: the same top-20 board, an uptime card, a live IP card (IPv4/IPv6, click to copy), live speed, VPN status, a Wi-Fi / Ethernet card with a WI-FI / ETH switch, and lab cards for a Proxmox homelab, site uptime, who's talking, a Wi-Fi survey, LAN watch and deadlines, with white/yellow/red thresholds and a dark/light toggle |
 | **Dark - Weather & System Monitor** | Current weather, rain forecast, CPU/RAM rings, uptime |
 | **Simplic - System Monitoring Suite** | Clean system widgets: CPU, RAM, disk, network, weather, time |
 | **Illustro - Clean System Widgets** | Minimal system monitoring (clock, disk, network, system, recycle bin) |
@@ -200,6 +200,12 @@ There are two top-20 boards, in two skin folders, built to run side by side so y
 | `NetWorks` | `Speed` | Live download and upload in Mbps on the best-route adapter, a ~7 minute graph, peaks and data used since load. Shows current traffic, not a speed test |
 | `NetWorks` | `VPN` | Which VPN is connected (Proton, Mullvad, Net // Works or any other tunnel) and whether it actually carries your traffic, judged by the default route. A yellow NOT PROTECTED banner when traffic goes out directly |
 | `NetWorks` | `WiFi-Eth` | Wi-Fi or Ethernet, picked with the WI-FI / ETH switch (it remembers). Wi-Fi: network name, signal strength as bars, % and approximate dBm (yellow below 60%, red below 35%, editable), security, radio type, channel and band, link rates. Ethernet: adapter, link speed, duplex, IPv4, gateway, DNS and MAC |
+| `NetWorks` | `Homelab` | A Proxmox host and every guest on it, through one SSH call with your own key: host CPU (with load per core), memory, IO wait (with processes stuck on disk), guests running, one dot per guest, and a table of guests that should be up but are not, then the busiest. CPU and IO wait come from `/proc/stat`, so they stay right when pvestatd stalls |
+| `NetWorks` | `Sites` | Status code and response time for up to 16 sites, checked in parallel every minute. A solid ALL UP banner, or the down ones in red. 401/403 count as up (a gated site answering). Click a row to open the site |
+| `NetWorks` | `Talkers` | Who's talking: every program holding a connection to the internet, the address, owner network, city, country and port. Owners come from an offline IP // Revealer install if you point the card at one; threat-listed addresses turn red |
+| `NetWorks` | `WiFi-Survey` | Every Wi-Fi network in range, strongest first: name, access point vendor from the BSSID (virtual BSSIDs resolved to the radio's maker), channel, band, signal and security (OPEN in yellow), plus a bar per 2.4 and 5 GHz channel showing how crowded it is. Triggers a fresh scan each cycle |
+| `NetWorks` | `LAN` | LAN watch: every device on your local network from a ping sweep every 5 minutes, with name (your labels, Proxmox guests, or reverse DNS from the gateway), vendor, MAC and first seen. Devices new in the last 24 hours turn yellow; another device answering on a running container's static IP shows as an IP CLASH in red |
+| `NetWorks` | `Deadlines` | A countdown to your dates: the next one large, the rest in a table. Yellow inside 30 days, red inside 7 |
 
 Each board shows four columns at once, and each column ranks the 20 processes using the most of one resource. Processes are grouped by name, the way Task Manager groups them:
 
@@ -212,7 +218,9 @@ Each board shows four columns at once, and each column ranks the 20 processes us
 
 **How it gets the data.** `@Resources\Scripts\Collect.ps1` reads the Windows performance counters through WMI every 2 seconds and writes `@Resources\Data\procs.txt`. `Procs.lua` sorts that file four ways and draws the boards. The collector starts hidden when a board loads. Each skin folder runs its own collector, and a mutex stops duplicates within a folder. It shuts itself off about 20 seconds after the last board closes, because it watches a heartbeat file the boards keep updating. Nothing is left running in the background.
 
-**Screenshot mode.** Before taking screenshots, run `[!SetVariable Demo 1]` on the IP, Wi-Fi / Eth and Uptime cards (or add `Demo=1` under `[Variables]` and refresh). They then show documentation-only IP addresses and placeholder network and computer names, so nothing real leaks. Set it back to `0` afterwards.
+**Screenshot mode.** Before taking screenshots, run `[!SetVariable Demo 1]` on the IP, Wi-Fi / Eth and Uptime cards (or add `Demo=1` under `[Variables]` and refresh). They then show documentation-only IP addresses and placeholder network and computer names, so nothing real leaks. Set it back to `0` afterwards. The Homelab, Sites, Talkers, WiFi-Survey and LAN cards honour `Demo=1` too (placeholder guest, site, network and device names, documentation addresses and MACs).
+
+**Your settings.** The Homelab, Sites, Talkers, LAN and Deadlines cards read plain text files in `@Resources\Local\`: `homelab.txt` (the Proxmox host, `Host=root@...`), `sites.txt` (one site per line), `talkers.txt` (optional IP // Revealer folder), `lan_names.txt` (`MAC or IP = label`) and `deadlines.txt` (`2026-10-11 | Name`). The first run copies each one from `@Resources\Examples\`, and right-clicking a card opens its file. `Local\` and the live `Data\` folder are in `.gitignore`, so your hosts, sites and network never get committed. MAC vendors come from `@Resources\Lookup\oui.tsv`, built from the public IEEE registries by `@Resources\Tools\build_oui.py`. The lab-card INIs are generated by `@Resources\Tools\generate_net_cards.py`, which shares its frame with the Speed, VPN and Wi-Fi / Eth cards.
 
 **Dark/light.** Click the `LIGHT` / `DARK` button in the corner of the Net // Works skins. Both palettes live in `@Resources\Themes\`. The 3,000-line board INIs are generated: edit `@Resources\Tools\generate_processes.py` in that folder, rerun it, then refresh.
 

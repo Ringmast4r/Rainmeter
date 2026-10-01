@@ -1,0 +1,4 @@
+# Sites for the Sites up card, one per line (up to 16). https:// is assumed when no scheme is given.
+example.com
+https://www.wikipedia.org
+https://github.com
