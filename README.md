@@ -60,7 +60,7 @@ Rainmeter has been around since 2001 and is still the best thing on Windows for 
 |:--|:--|
 | **Top 20 - Process Leaderboard** | Six side-by-side top-20 leaderboards: CPU, memory, swap, disk I/O, GPU (per engine), VRAM |
 | **NWModern - Processes** | Dark glass top-20 board: CPU, memory, GPU and GPU memory ranked in four columns, values tinted by load |
-| **NetWorks - Processes and Uptime** | Net // Works black-and-white boards: the same top-20 board, an uptime card, a live IP card (IPv4/IPv6, click to copy), live speed, VPN status and Wi-Fi signal cards, with white/yellow/red thresholds and a dark/light toggle |
+| **NetWorks** | Net // Works black-and-white boards: the same top-20 board, an uptime card, a live IP card (IPv4/IPv6, click to copy), live speed, VPN status, and a Wi-Fi / Ethernet card with a WI-FI / ETH switch, with white/yellow/red thresholds and a dark/light toggle |
 | **Dark - Weather & System Monitor** | Current weather, rain forecast, CPU/RAM rings, uptime |
 | **Simplic - System Monitoring Suite** | Clean system widgets: CPU, RAM, disk, network, weather, time |
 | **Illustro - Clean System Widgets** | Minimal system monitoring (clock, disk, network, system, recycle bin) |
@@ -177,7 +177,7 @@ Everything comes from the UsageMonitor plugin that ships with Rainmeter, one per
 </p>
 <p align="center">
   <img width="340" src="screenshots/networks-uptime.png"/>
-  <img width="340" src="screenshots/networks-wifi.png"/>
+  <img width="340" src="screenshots/networks-wifi-eth.png"/>
 </p>
 <p align="center">
   <img width="440" src="screenshots/networks-ip.png"/>
@@ -187,19 +187,19 @@ Everything comes from the UsageMonitor plugin that ships with Rainmeter, one per
   <img width="440" src="screenshots/networks-speed.png"/>
 </p>
 
-<sub>Screenshots are taken in screenshot mode: the IP card shows documentation-only addresses (203.0.113.0/24, 2001:db8::/32), and the Wi-Fi and Uptime cards show placeholder names.</sub>
+<sub>Screenshots are taken in screenshot mode: the IP and Wi-Fi / Eth cards show documentation-only addresses (203.0.113.0/24, 192.0.2.0/24, 2001:db8::/32) and the Wi-Fi / Eth and Uptime cards show placeholder names.</sub>
 
 There are two top-20 boards, in two skin folders, built to run side by side so you can compare the styles live:
 
 | Folder | Skin | Look |
 |:--|:--|:--|
 | `NWModern - Processes` | `Processes` | Dark glass, one accent colour per resource, CPU and GPU values tinted by load |
-| `NetWorks - Processes and Uptime` | `Processes` | The Net // Works house style: black and white, Courier New, square 2-3px borders, black table headers. Values step white, yellow, red at thresholds you set in the INI. Has a dark/light toggle |
-| `NetWorks - Processes and Uptime` | `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Same house style and toggle |
-| `NetWorks - Processes and Uptime` | `IP` | Live public and local IPv4 / IPv6. Click an address to copy it, or COPY ALL. Looks up every 15 s, so a VPN switch shows within seconds, and a changed address turns yellow for a minute. Public addresses come from ipify.org. If IPv6 is missing it says why (tur| `NetWorks - Processes and Uptime` | `Speed` | Live download and upload in Mbps on the best-route adapter, a ~7 minute graph, peaks and data used since load. Shows current traffic, not a speed test |
-| `NetWorks - Processes and Uptime` | `VPN` | Which VPN is connected (Proton, Mullvad, Net // Works or any other tunnel) and whether it actually carries your traffic, judged by the default route. A yellow NOT PROTECTED banner when traffic goes out directly |
-| `NetWorks - Processes and Uptime` | `WiFi` | Network name, signal strength as bars, % and approximate dBm (yellow below 60%, red below 35%, editable), security, radio type, channel and band, link rates |
-ned off on the adapter, or no IPv6 route) |
+| `NetWorks` | `Processes` | The Net // Works house style: black and white, Courier New, square 2-3px borders, black table headers. Values step white, yellow, red at thresholds you set in the INI. Has a dark/light toggle |
+| `NetWorks` | `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Same house style and toggle |
+| `NetWorks` | `IP` | Live public and local IPv4 / IPv6. Click an address to copy it, or COPY ALL. Looks up every 15 s, so a VPN switch shows within seconds, and a changed address turns yellow for a minute. Public addresses come from ipify.org. If IPv6 is missing it says why (turned off on the adapter, or no IPv6 route) |
+| `NetWorks` | `Speed` | Live download and upload in Mbps on the best-route adapter, a ~7 minute graph, peaks and data used since load. Shows current traffic, not a speed test |
+| `NetWorks` | `VPN` | Which VPN is connected (Proton, Mullvad, Net // Works or any other tunnel) and whether it actually carries your traffic, judged by the default route. A yellow NOT PROTECTED banner when traffic goes out directly |
+| `NetWorks` | `WiFi-Eth` | Wi-Fi or Ethernet, picked with the WI-FI / ETH switch (it remembers). Wi-Fi: network name, signal strength as bars, % and approximate dBm (yellow below 60%, red below 35%, editable), security, radio type, channel and band, link rates. Ethernet: adapter, link speed, duplex, IPv4, gateway, DNS and MAC |
 
 Each board shows four columns at once, and each column ranks the 20 processes using the most of one resource. Processes are grouped by name, the way Task Manager groups them:
 
@@ -212,7 +212,7 @@ Each board shows four columns at once, and each column ranks the 20 processes us
 
 **How it gets the data.** `@Resources\Scripts\Collect.ps1` reads the Windows performance counters through WMI every 2 seconds and writes `@Resources\Data\procs.txt`. `Procs.lua` sorts that file four ways and draws the boards. The collector starts hidden when a board loads. Each skin folder runs its own collector, and a mutex stops duplicates within a folder. It shuts itself off about 20 seconds after the last board closes, because it watches a heartbeat file the boards keep updating. Nothing is left running in the background.
 
-**Screenshot mode.** Before taking screenshots, run `[!SetVariable Demo 1]` on the IP, Wi-Fi and Uptime cards (or add `Demo=1` under `[Variables]` and refresh). They then show documentation-only IP addresses and placeholder network and computer names, so nothing real leaks. Set it back to `0` afterwards.
+**Screenshot mode.** Before taking screenshots, run `[!SetVariable Demo 1]` on the IP, Wi-Fi / Eth and Uptime cards (or add `Demo=1` under `[Variables]` and refresh). They then show documentation-only IP addresses and placeholder network and computer names, so nothing real leaks. Set it back to `0` afterwards.
 
 **Dark/light.** Click the `LIGHT` / `DARK` button in the corner of the Net // Works skins. Both palettes live in `@Resources\Themes\`. The 3,000-line board INIs are generated: edit `@Resources\Tools\generate_processes.py` in that folder, rerun it, then refresh.
 

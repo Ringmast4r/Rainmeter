@@ -107,14 +107,14 @@ Text=starting...
 """
 
 
-def runcommand(script, finish="Parse()"):
+def runcommand(script, finish="Parse()", args=""):
     return f"""
 ; ================= measures
 [mRun]
 Measure=Plugin
 Plugin=RunCommand
 Program=powershell.exe
-Parameter=-NoProfile -ExecutionPolicy Bypass -File "#@#Scripts\\{script}"
+Parameter=-NoProfile -ExecutionPolicy Bypass -File "#@#Scripts\\{script}"{args}
 State=Hide
 OutputType=UTF8
 Timeout=20000
@@ -306,15 +306,33 @@ vpn += table_rows([("RProton", "Proton VPN"), ("RMullvad", "Mullvad"), ("RNetWor
 (ROOT / "VPN").mkdir(exist_ok=True)
 (ROOT / "VPN" / "VPN.ini").write_text(vpn, encoding="utf-8")
 
-# ======================================================================= WI-FI
+# ================================================================= WI-FI / ETH
 W, H = 340, 264
-wifi = frame("Wi-Fi", "Wi-Fi network name, signal strength (with thresholds), security, channel and link rates from netsh.",
-             "Wi-Fi", "// signal", W, H,
-             extra_rainmeter="OnRefreshAction=[!CommandMeasure mRun \"Run\"]\nContextTitle=Open Wi-Fi settings\nContextAction=[\"ms-settings:network-wifi\"]\n",
-             measures="""; Signal colour steps ink -> yellow -> red below these percentages.
+wifi = frame("Wi-Fi / Eth", "Wi-Fi (wlan) or Ethernet (eth), switched by the WI-FI / ETH buttons. Wi-Fi: network name, signal "
+             "strength (with thresholds), security, channel and link rates from netsh. Ethernet: adapter, link speed, duplex, "
+             "IPv4, gateway, DNS and MAC.",
+             "Wi-Fi / Eth", "", W, H,
+             extra_rainmeter="OnRefreshAction=[!CommandMeasure mRun \"Run\"]\nContextTitle=Open Wi-Fi settings\nContextAction=[\"ms-settings:network-wifi\"]\n"
+                             "ContextTitle2=Open Ethernet settings\nContextAction2=[\"ms-settings:network-ethernet\"]\n",
+             measures="""; Which link the card shows: wifi or eth. Set by the WI-FI / ETH switch.
+Mode=wifi
+; Signal colour steps ink -> yellow -> red below these percentages.
 SignalWarn=60
 SignalCrit=35
-@@VARS@@""" + runcommand("WiFi.ps1") + script("WiFi.lua"))
+@@VARS@@""" + runcommand("WiFi.ps1", args=" -Mode #Mode#") + script("WiFi.lua"))
+for meter, label, val, x, tip in [("MModeWifi", "Wi-Fi", "wifi", W - 110, "Show the wireless link (wlan)"),
+                                  ("MModeEth", "Eth", "eth", W - 78, "Show the wired link (eth)")]:
+    wifi += f"""
+[{meter}]
+Meter=String
+MeterStyle=sBtn
+StringCase=Upper
+X={x}
+Y=16
+Text={label}
+LeftMouseUpAction=[!WriteKeyValue Variables Mode {val}][!Refresh]
+ToolTipText={tip}
+"""
 wifi += f"""
 [MNetBox]
 Meter=Shape
@@ -426,6 +444,6 @@ W=220
 H=14
 Text=-
 """
-(ROOT / "WiFi").mkdir(exist_ok=True)
-(ROOT / "WiFi" / "WiFi.ini").write_text(wifi, encoding="utf-8")
-print("written: Speed/Speed.ini, VPN/VPN.ini, WiFi/WiFi.ini")
+(ROOT / "WiFi-Eth").mkdir(exist_ok=True)
+(ROOT / "WiFi-Eth" / "WiFi-Eth.ini").write_text(wifi, encoding="utf-8")
+print("written: Speed/Speed.ini, VPN/VPN.ini, WiFi-Eth/WiFi-Eth.ini")
