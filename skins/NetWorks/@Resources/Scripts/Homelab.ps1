@@ -11,12 +11,13 @@ hostname; nproc; cut -d' ' -f1 /proc/loadavg; grep -E '^(MemTotal|MemAvailable):
 echo '@@STAT'
 head -1 /proc/stat; sleep 1; head -1 /proc/stat
 echo '@@BOOT'
-grep -H '^onboot:' /etc/pve/lxc/*.conf /etc/pve/qemu-server/*.conf 2>/dev/null
+for f in /etc/pve/lxc/*.conf /etc/pve/qemu-server/*.conf; do awk -v f="$f" '/^\[/{exit} /^onboot:/{print f":"$0}' "$f"; done 2>/dev/null
 echo '@@NET'
-grep -H '^net[0-9]*:' /etc/pve/lxc/*.conf 2>/dev/null
+for f in /etc/pve/lxc/*.conf; do awk -v f="$f" '/^\[/{exit} /^net[0-9]+:/{print f":"$0}' "$f"; done 2>/dev/null
 echo '@@D'
 ps -eo stat= | grep -c '^D'
 '@
+# onboot/net lines are read only up to the first [snapshot] section, which holds old copies of the config.
 # base64 keeps quoting out of the PowerShell -> ssh -> bash chain
 $b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($remote -replace "`r", '')))
 $raw = & ssh -n -o BatchMode=yes -o ConnectTimeout=6 $target "echo $b64 | base64 -d | bash" 2>$null
