@@ -9,3 +9,6 @@ ToggleTo=dark
 ToggleLabel=DARK
 cAlt=245,245,245,255
 cBar=0,0,0,28
+; threshold colours (process boards)
+cWarn=176,128,0,255
+cCrit=200,0,0,255

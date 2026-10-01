@@ -183,7 +183,7 @@ There are two top-20 boards here, built to run side by side and fed by the same 
 | Skin | Look |
 |:--|:--|
 | `Processes` | Dark glass, one accent colour per resource, CPU and GPU values tinted by load |
-| `ProcessesSinCity` | The Sin City house style: black and white, Courier New, square 2-3px borders, black table headers. Has a dark/light toggle |
+| `ProcessesSinCity` | The Sin City house style: black and white, Courier New, square 2-3px borders, black table headers. Values step from ink to yellow to red at thresholds you can set in the INI. Has a dark/light toggle |
 | `Uptime` | Days, hours, minutes and seconds as stat boxes, plus day progress, boot time and total hours. Sin City style, with a dark/light toggle |
 
 Each board shows four columns at once, and each column ranks the 20 processes using the most of one resource. Processes are grouped by name, the way Task Manager groups them:

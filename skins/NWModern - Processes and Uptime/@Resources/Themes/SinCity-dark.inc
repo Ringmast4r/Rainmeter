@@ -9,3 +9,6 @@ ToggleTo=light
 ToggleLabel=LIGHT
 cAlt=17,17,17,255
 cBar=255,255,255,38
+; threshold colours (process boards)
+cWarn=255,214,0,255
+cCrit=255,59,48,255

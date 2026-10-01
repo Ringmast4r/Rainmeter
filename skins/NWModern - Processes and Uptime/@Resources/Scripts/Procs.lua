@@ -9,13 +9,39 @@ local DATA, BEAT
 local lastStamp, MONO
 local rows, meta = {}, {}
 
+-- House-style thresholds: ink -> warn (yellow) -> crit (red).
+-- Each pair is {warn, crit}; override any of them from the skin's [Variables].
+local INK, WARN, CRIT
+local LIMIT = {
+    cpu  = { 25, 60 },     -- % of all cores, per process
+    gpu  = { 25, 60 },     -- % busiest engine, per process
+    ram  = { 1024, 4096 }, -- MB, per process
+    gmem = { 512, 1536 },  -- MB, per process
+    tile = { 60, 85 },     -- % for the four totals at the top
+}
+
+local function var(name, fallback) return tonumber(SKIN:GetVariable(name)) or fallback end
+
 function Initialize()
     local res = SKIN:ReplaceVariables('#@#')
     DATA = res .. 'Data/procs.txt'
     BEAT = res .. 'Data/beat.txt'
     BARW  = tonumber(SKIN:GetVariable('BarW'))  or BARW
     TILEW = tonumber(SKIN:GetVariable('TileW')) or TILEW
-    MONO = SKIN:GetVariable('Mono') == '1'   -- house-style skin: no heat colours
+    MONO = SKIN:GetVariable('Mono') == '1'   -- house-style skin: threshold colours instead of heat
+    if MONO then
+        INK, WARN, CRIT = SKIN:GetVariable('cFg'), SKIN:GetVariable('cWarn'), SKIN:GetVariable('cCrit')
+        for k, l in pairs(LIMIT) do
+            local K = k:sub(1, 1):upper() .. k:sub(2)
+            l[1], l[2] = var(K .. 'Warn', l[1]), var(K .. 'Crit', l[2])
+        end
+    end
+end
+
+local function level(key, v)
+    local l = LIMIT[key]
+    if v >= l[2] then return CRIT elseif v >= l[1] then return WARN end
+    return INK
 end
 
 local function set(m, k, v) SKIN:Bang('!SetOption', m, k, v) end
@@ -59,6 +85,11 @@ local function tile(p, value, sub, frac)
     set('T' .. p .. 'Val', 'Text', value)
     set('T' .. p .. 'Sub', 'Text', sub)
     set('T' .. p .. 'Bar', 'W', math.max(1, math.floor(TILEW * math.min(1, math.max(0, frac)))))
+    if MONO then
+        local c = level('tile', frac * 100)
+        set('T' .. p .. 'Val', 'FontColor', c)
+        set('T' .. p .. 'Bar', 'SolidColor', c)
+    end
 end
 
 local function column(key)
@@ -76,7 +107,13 @@ local function column(key)
         if r then
             set(m .. 'Name', 'Text', r.name)
             set(m .. 'Val', 'Text', isPct and pct(r[key]) or mem(r[key]))
-            if isPct and not MONO then set(m .. 'Val', 'FontColor', heat(r[key])) end
+            if MONO then
+                local c = level(key, r[key])
+                set(m .. 'Val', 'FontColor', c)
+                set(m .. 'Name', 'FontColor', c)
+            elseif isPct then
+                set(m .. 'Val', 'FontColor', heat(r[key]))
+            end
             set(m .. 'Bar', 'W', math.max(1, math.floor(BARW * r[key] / top)))
             SKIN:Bang('!ShowMeter', m .. 'Bar')
         else

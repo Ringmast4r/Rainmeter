@@ -40,6 +40,18 @@ fMono=Courier New
 Mono=1
 BarW={PW}
 TileW={PW-22}
+; Value colours step ink -> yellow -> red at these thresholds (Warn / Crit).
+; CPU and GPU in % per process, Ram and Gmem in MB per process, Tile in % of the totals.
+CpuWarn=25
+CpuCrit=60
+GpuWarn=25
+GpuCrit=60
+RamWarn=1024
+RamCrit=4096
+GmemWarn=512
+GmemCrit=1536
+TileWarn=60
+TileCrit=85
 
 ; ================= styles
 [sCap]
