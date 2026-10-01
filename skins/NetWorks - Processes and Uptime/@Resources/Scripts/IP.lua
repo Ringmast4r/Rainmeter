@@ -12,6 +12,12 @@ local run, INK, MID, WARN
 local vals, changedAt, copiedAt = {}, {}, {}
 local v6State, iface = '', ''
 local tick, lastOk = 0, nil
+local lastDemo = false
+
+-- Screenshot mode: set the skin variable Demo=1 (e.g. [!SetVariable Demo 1]) and the card shows
+-- documentation-only addresses instead of yours, so screenshots never leak a real IP.
+local DEMO = { PublicV4 = '203.0.113.42', PublicV6 = '2001:db8:85a3::8a2e:370:7334',
+               LocalV4 = '192.168.1.50', LocalV6 = '2001:db8:85a3::1c2', Iface = 'Wi-Fi', V6State = '' }
 
 local function set(m, k, v) SKIN:Bang('!SetOption', m, k, v) end
 
@@ -58,9 +64,14 @@ function Parse()
         if k then got[k] = v:gsub('%s+$', '') end
     end
     if got.Iface == nil then return end           -- script failed; keep last values
+    local demo = SKIN:GetVariable('Demo') == '1'
+    if demo then for k, v in pairs(DEMO) do got[k] = v end end
+    local switched = demo ~= lastDemo
+    lastDemo = demo
     for key, f in pairs(FIELDS) do
         local new = got[key] or ''
-        if vals[f] and vals[f] ~= '' and new ~= '' and new ~= vals[f] then changedAt[f] = os.time() end
+        if switched then changedAt[f] = nil
+        elseif vals[f] and vals[f] ~= '' and new ~= '' and new ~= vals[f] then changedAt[f] = os.time() end
         vals[f] = new
     end
     v6State, iface = got.V6State or '', got.Iface or ''

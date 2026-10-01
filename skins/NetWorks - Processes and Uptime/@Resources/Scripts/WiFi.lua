@@ -30,6 +30,8 @@ function Parse()
         if k then g[k] = v:gsub('%s+$', '') end
     end
     if g.State == nil then return end
+    -- Screenshot mode (skin variable Demo=1): placeholder network name
+    if SKIN:GetVariable('Demo') == '1' and g.SSID ~= '' then g.SSID = 'NetWorks-Lab' end
 
     local connected = (g.State == 'connected') and g.SSID ~= ''
     local sig = tonumber(g.Signal) or 0

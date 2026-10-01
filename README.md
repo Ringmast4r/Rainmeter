@@ -173,11 +173,21 @@ Everything comes from the UsageMonitor plugin that ships with Rainmeter, one per
   <img width="100%" src="screenshots/nwmodern-processes.png"/>
 </p>
 <p align="center">
-  <img width="100%" src="screenshots/nwmodern-processes-sincity.png"/>
+  <img width="100%" src="screenshots/networks-processes.png"/>
 </p>
 <p align="center">
-  <img width="340" src="screenshots/nwmodern-uptime.png"/>
+  <img width="340" src="screenshots/networks-uptime.png"/>
+  <img width="340" src="screenshots/networks-wifi.png"/>
 </p>
+<p align="center">
+  <img width="440" src="screenshots/networks-ip.png"/>
+  <img width="440" src="screenshots/networks-vpn.png"/>
+</p>
+<p align="center">
+  <img width="440" src="screenshots/networks-speed.png"/>
+</p>
+
+<sub>Screenshots are taken in screenshot mode: the IP card shows documentation-only addresses (203.0.113.0/24, 2001:db8::/32), and the Wi-Fi and Uptime cards show placeholder names.</sub>
 
 There are two top-20 boards, in two skin folders, built to run side by side so you can compare the styles live:
 
@@ -201,6 +211,8 @@ Each board shows four columns at once, and each column ranks the 20 processes us
 | GPU mem | dedicated + shared GPU memory committed (Task Manager's "GPU memory") |
 
 **How it gets the data.** `@Resources\Scripts\Collect.ps1` reads the Windows performance counters through WMI every 2 seconds and writes `@Resources\Data\procs.txt`. `Procs.lua` sorts that file four ways and draws the boards. The collector starts hidden when a board loads. Each skin folder runs its own collector, and a mutex stops duplicates within a folder. It shuts itself off about 20 seconds after the last board closes, because it watches a heartbeat file the boards keep updating. Nothing is left running in the background.
+
+**Screenshot mode.** Before taking screenshots, run `[!SetVariable Demo 1]` on the IP, Wi-Fi and Uptime cards (or add `Demo=1` under `[Variables]` and refresh). They then show documentation-only IP addresses and placeholder network and computer names, so nothing real leaks. Set it back to `0` afterwards.
 
 **Dark/light.** Click the `LIGHT` / `DARK` button in the corner of the Net // Works skins. Both palettes live in `@Resources\Themes\`. The 3,000-line board INIs are generated: edit `@Resources\Tools\generate_processes.py` in that folder, rerun it, then refresh.
 
