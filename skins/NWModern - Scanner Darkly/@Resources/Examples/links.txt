@@ -1,0 +1,5 @@
+# Fallback link list, used only when scanner-darkly.db cannot be found and Local\links.txt does not exist yet.
+# Copy it to Local\links.txt and list your own dashboards, one per line:
+# name|url|category|stat|ct|description
+Example dashboard|https://example.com/|dashboard|placeholder row|0|Replace with your own links.
+Example API|https://example.org/|recon|placeholder row|0|Replace with your own links.

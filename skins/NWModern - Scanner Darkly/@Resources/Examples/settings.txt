@@ -1,0 +1,4 @@
+# NWModern Scanner Darkly settings. Local\settings.txt (gitignored) overrides this file.
+# Db = full path to scanner-darkly.db. Leave empty to look for
+#      <drive>:\03 Website Library\Scanner Darkly\data\scanner-darkly.db on every fixed drive.
+Db=
